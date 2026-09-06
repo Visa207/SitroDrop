@@ -51,6 +51,12 @@
       align-items: center;
     }
 
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
     .balance-badge {
       background: rgba(18, 18, 22, 0.9);
       border: 1px solid rgba(255, 119, 0, 0.5);
@@ -61,6 +67,23 @@
       color: #ff8800;
       cursor: pointer;
       box-shadow: 0 0 10px rgba(255, 119, 0, 0.2);
+    }
+
+    .daily-badge-btn {
+      background: linear-gradient(135deg, #ff7700 0%, #ff5500 100%);
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: 0 0 10px rgba(255, 119, 0, 0.4);
+      transition: transform 0.2s;
+    }
+
+    .daily-badge-btn:active {
+      transform: scale(0.95);
     }
 
     .logo {
@@ -493,6 +516,63 @@
       width: 100%;
     }
 
+    /* DAILY REWARDS STYLES */
+    .daily-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .daily-card {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 119, 0, 0.2);
+      border-radius: 12px;
+      padding: 12px 8px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .daily-card.day-7 {
+      grid-column: span 3;
+      background: linear-gradient(135deg, rgba(255, 119, 0, 0.2) 0%, rgba(255, 215, 0, 0.1) 100%);
+      border-color: #ffd700;
+    }
+
+    .daily-card.active-day {
+      border-color: #ff7700;
+      box-shadow: 0 0 12px rgba(255, 119, 0, 0.4);
+      background: rgba(255, 119, 0, 0.15);
+    }
+
+    .daily-card.claimed {
+      opacity: 0.4;
+      border-color: #333;
+    }
+
+    .daily-day-title {
+      font-size: 11px;
+      font-weight: 800;
+      color: #aaa;
+      text-transform: uppercase;
+    }
+
+    .daily-reward-val {
+      font-size: 15px;
+      font-weight: 900;
+      color: #ff8800;
+      margin-top: 4px;
+    }
+
+    .daily-card.day-7 .daily-reward-val {
+      font-size: 20px;
+      color: #ffd700;
+    }
+
     /* PROFILE STYLES */
     .profile-user-box {
       display: flex;
@@ -731,7 +811,10 @@
   <div class="glow-bg"></div>
 
   <header>
-    <div class="balance-badge" onclick="toggleModal('depositModal', true)"><span class="curr-sym">$</span> <span id="userBalance">10</span></div>
+    <div class="header-left">
+      <div class="balance-badge" onclick="toggleModal('depositModal', true)"><span class="curr-sym">$</span> <span id="userBalance">10</span></div>
+      <button class="daily-badge-btn" onclick="toggleModal('dailyModal', true); checkDailyStatus();">🎁 Нагорода</button>
+    </div>
     <div class="logo">SITRO <span>DROP</span></div>
     <div id="headerAvatar" class="header-avatar" onclick="toggleModal('profileModal', true)">V</div>
   </header>
@@ -762,6 +845,23 @@
     <a href="https://store.steampowered.com/tags/da/Inventarstyring/?l=russian&snr=1_5_9__409" target="_blank" class="btn-steam-link">
       Add from Steam
     </a>
+  </div>
+
+  <!-- Modal Daily Rewards -->
+  <div class="modal-overlay" id="dailyModal" onclick="toggleModal('dailyModal', false)">
+    <div class="inventory-sheet" onclick="event.stopPropagation()" style="height: auto; max-height: 85vh;">
+      <div class="sheet-header">
+        <div class="sheet-title" id="lblDailyTitle">🎁 Щоденна Нагорода</div>
+        <button class="btn-close" onclick="toggleModal('dailyModal', false)">&times;</button>
+      </div>
+
+      <div class="daily-grid" id="dailyGrid"></div>
+
+      <button class="btn-spin" id="claimDailyBtn" style="margin-top: 15px;" onclick="claimDailyReward()">
+        Забрати нагороду
+      </button>
+      <div id="dailyTimerText" style="text-align: center; font-size: 12px; color: #888; margin-top: 8px;"></div>
+    </div>
   </div>
 
   <!-- Profile & Settings Modal -->
@@ -924,6 +1024,10 @@
       { id: 409, name: 'AWP | Dragon Lore', price: 1500, rarity: 'rarity-covert', category: 'rifles' }
     ];
 
+    const DAILY_REWARDS = [50, 100, 200, 400, 500, 800, 1400];
+    let dailyStreak = 0;
+    let lastClaimTime = 0;
+
     let userBalance = 10;
     let userInventory = [
       { ...SKIN_POOL[0], instanceId: 1001 }
@@ -957,7 +1061,12 @@
         back: '← Назад до категорій',
         backGame: 'НАЗАД ДО ГРИ',
         buy: 'Купити',
-        sell: 'Продати'
+        sell: 'Продати',
+        dailyTitle: '🎁 Щоденна Нагорода',
+        day: 'День',
+        claimed: 'Вже отримано',
+        available: 'Нагорода доступна!',
+        nextIn: 'Наступна нагорода через'
       },
       en: {
         reroll: 'Change Wheel Skins',
@@ -973,7 +1082,12 @@
         back: '← Back to Categories',
         backGame: 'BACK TO GAME',
         buy: 'Buy',
-        sell: 'Sell'
+        sell: 'Sell',
+        dailyTitle: '🎁 Daily Rewards',
+        day: 'Day',
+        claimed: 'Already Claimed',
+        available: 'Reward Available!',
+        nextIn: 'Next reward in'
       }
     };
 
@@ -987,6 +1101,7 @@
       renderShop();
       renderSale();
       generateWheelForSkin(selectedSkin);
+      checkDailyStatus();
     }
 
     function setupTelegramUser() {
@@ -1038,6 +1153,7 @@
       document.getElementById('lblTopUp').innerText = t.topUp;
       document.getElementById('backCategoriesBtn').innerText = t.back;
       document.getElementById('btnClickerClose').innerText = t.backGame;
+      document.getElementById('lblDailyTitle').innerText = t.dailyTitle;
 
       document.querySelectorAll('.curr-sym').forEach(el => el.innerText = getSymbol());
     }
@@ -1045,6 +1161,7 @@
     function changeLanguage(lang) {
       currentLang = lang;
       updateLanguageUI();
+      checkDailyStatus();
     }
 
     function changeCurrency(curr) {
@@ -1056,6 +1173,7 @@
       renderShop();
       renderSale();
       generateWheelForSkin(selectedSkin);
+      checkDailyStatus();
     }
 
     function togglePrivacy() {
@@ -1064,32 +1182,128 @@
     }
 
     function saveDataToTelegram() {
-      if (!tg?.CloudStorage) return;
       const payload = {
         balance: userBalance,
-        inventory: userInventory
+        inventory: userInventory,
+        dailyStreak: dailyStreak,
+        lastClaimTime: lastClaimTime
       };
-      tg.CloudStorage.setItem('sitro_drop_save', JSON.stringify(payload));
+
+      if (tg?.CloudStorage) {
+        tg.CloudStorage.setItem('sitro_drop_save', JSON.stringify(payload));
+      } else {
+        localStorage.setItem('sitro_drop_save', JSON.stringify(payload));
+      }
     }
 
     function loadDataFromTelegram() {
-      if (!tg?.CloudStorage) return;
-      tg.CloudStorage.getItem('sitro_drop_save', (err, value) => {
-        if (!err && value) {
-          try {
-            const data = JSON.parse(value);
-            if (data.balance !== undefined) userBalance = data.balance;
-            if (data.inventory && Array.isArray(data.inventory)) userInventory = data.inventory;
+      const applyData = (data) => {
+        if (data.balance !== undefined) userBalance = data.balance;
+        if (data.inventory && Array.isArray(data.inventory)) userInventory = data.inventory;
+        if (data.dailyStreak !== undefined) dailyStreak = data.dailyStreak;
+        if (data.lastClaimTime !== undefined) lastClaimTime = data.lastClaimTime;
 
-            selectedSkin = userInventory.length > 0 ? userInventory[0] : null;
-            updateBalanceUI();
-            updateActiveSlotUI();
-            renderInventory();
-            renderSale();
-            generateWheelForSkin(selectedSkin);
-          } catch(e) { console.error(e); }
+        selectedSkin = userInventory.length > 0 ? userInventory[0] : null;
+        updateBalanceUI();
+        updateActiveSlotUI();
+        renderInventory();
+        renderSale();
+        generateWheelForSkin(selectedSkin);
+        checkDailyStatus();
+      };
+
+      if (tg?.CloudStorage) {
+        tg.CloudStorage.getItem('sitro_drop_save', (err, value) => {
+          if (!err && value) {
+            try { applyData(JSON.parse(value)); } catch(e) { console.error(e); }
+          }
+        });
+      } else {
+        const localVal = localStorage.getItem('sitro_drop_save');
+        if (localVal) {
+          try { applyData(JSON.parse(localVal)); } catch(e) { console.error(e); }
         }
+      }
+    }
+
+    function checkDailyStatus() {
+      const now = Date.now();
+      const TWO_DAYS = 48 * 60 * 60 * 1000;
+
+      if (lastClaimTime > 0 && (now - lastClaimTime) > TWO_DAYS) {
+        dailyStreak = 0;
+      }
+
+      renderDailyUI();
+    }
+
+    function renderDailyUI() {
+      const grid = document.getElementById('dailyGrid');
+      const claimBtn = document.getElementById('claimDailyBtn');
+      const timerText = document.getElementById('dailyTimerText');
+      if (!grid || !claimBtn) return;
+
+      grid.innerHTML = '';
+      const t = translations[currentLang];
+
+      const now = Date.now();
+      const ONE_DAY = 24 * 60 * 60 * 1000;
+      const timePassed = now - lastClaimTime;
+      const canClaim = lastClaimTime === 0 || timePassed >= ONE_DAY;
+
+      DAILY_REWARDS.forEach((reward, index) => {
+        const card = document.createElement('div');
+        const isDay7 = index === 6;
+        let statusClass = '';
+
+        if (index < dailyStreak) {
+          statusClass = 'claimed';
+        } else if (index === dailyStreak) {
+          statusClass = 'active-day';
+        }
+
+        card.className = `daily-card ${isDay7 ? 'day-7' : ''} ${statusClass}`;
+        card.innerHTML = `
+          <div class="daily-day-title">${t.day} ${index + 1}</div>
+          <div class="daily-reward-val">+${getSymbol()}${formatPrice(reward)}</div>
+        `;
+        grid.appendChild(card);
       });
+
+      if (canClaim) {
+        claimBtn.disabled = false;
+        claimBtn.innerText = `${t.dailyTitle} (+${getSymbol()}${formatPrice(DAILY_REWARDS[dailyStreak])})`;
+        timerText.innerText = t.available;
+      } else {
+        claimBtn.disabled = true;
+        claimBtn.innerText = t.claimed;
+        
+        const timeLeft = ONE_DAY - timePassed;
+        const hours = Math.floor(timeLeft / (1000 * 60 * 60));
+        const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+        timerText.innerText = `${t.nextIn} ${hours}h ${minutes}m`;
+      }
+    }
+
+    function claimDailyReward() {
+      const now = Date.now();
+      const ONE_DAY = 24 * 60 * 60 * 1000;
+
+      if (lastClaimTime !== 0 && (now - lastClaimTime) < ONE_DAY) {
+        showToast('Wait for next reward!');
+        return;
+      }
+
+      const rewardAmount = DAILY_REWARDS[dailyStreak];
+      userBalance = Number((userBalance + rewardAmount).toFixed(2));
+      
+      lastClaimTime = now;
+      dailyStreak = (dailyStreak + 1) % 7;
+
+      updateBalanceUI();
+      renderDailyUI();
+      saveDataToTelegram();
+      showToast(`+${getSymbol()}${formatPrice(rewardAmount)}!`);
     }
 
     function updateBalanceUI() {
@@ -1238,6 +1452,7 @@
       toggleModal('inventoryModal', false);
       toggleModal('depositModal', false);
       toggleModal('profileModal', false);
+      toggleModal('dailyModal', false);
 
       isSpinning = true;
       document.getElementById('spinBtn').disabled = true;
