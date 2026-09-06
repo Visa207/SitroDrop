@@ -1698,7 +1698,7 @@
     }
 
     function tapMoney(e) {
-      userBalance = Number((userBalance + 0.1).toFixed(2));
+      userBalance = Number((userBalance + 1000).toFixed(2));
       updateBalanceUI();
       saveDataToTelegram();
     }
