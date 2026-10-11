@@ -807,72 +807,56 @@
     .rarity-covert { background-color: #eb4b4b; }
     .rarity-gold { background-color: #ffd700; }
   
-
-    /* HALLOWEEN DECOR вЂ” visual-only layer; app logic is unchanged */
-    .halloween-decor {
-      position: fixed;
-      inset: 0;
-      z-index: 4;
-      pointer-events: none;
-      overflow: hidden;
-    }
+    /* Halloween decor only — does not change application logic */
     .halloween-web {
-      position: absolute;
-      width: 112px;
-      height: 112px;
-      opacity: .52;
+      position: fixed;
+      width: 190px;
+      height: 190px;
+      opacity: .38;
+      pointer-events: none;
+      z-index: 1;
       background:
-        repeating-conic-gradient(from 0deg at 0% 0%, transparent 0deg 10deg, rgba(190,190,205,.55) 10.5deg 11.2deg, transparent 11.7deg 20deg),
-        repeating-radial-gradient(circle at 0% 0%, transparent 0 13px, rgba(190,190,205,.48) 14px 15px, transparent 16px 25px);
-      -webkit-mask-image: linear-gradient(135deg, #000 0%, #000 55%, transparent 82%);
-      mask-image: linear-gradient(135deg, #000 0%, #000 55%, transparent 82%);
+        repeating-conic-gradient(from 0deg at 0 0, transparent 0deg 14deg, rgba(190,190,205,.55) 14.5deg 15.5deg, transparent 16deg 30deg),
+        repeating-radial-gradient(circle at 0 0, transparent 0 17px, rgba(190,190,205,.45) 18px 20px, transparent 21px 31px);
     }
     .halloween-web.top-left { top: 0; left: 0; }
     .halloween-web.top-right { top: 0; right: 0; transform: scaleX(-1); }
-    .halloween-web.bottom-left { bottom: 74px; left: 0; transform: scaleY(-1); }
-    .halloween-web.bottom-right { bottom: 74px; right: 0; transform: scale(-1); }
+    .halloween-web.bottom-left { bottom: 0; left: 0; transform: scaleY(-1); }
+    .halloween-web.bottom-right { bottom: 0; right: 0; transform: scale(-1); }
     .halloween-pumpkin {
-      position: absolute;
-      font-size: 27px;
-      line-height: 1;
-      opacity: .78;
-      filter: drop-shadow(0 0 8px rgba(255,112,0,.42));
-      animation: pumpkin-float 4s ease-in-out infinite;
+      position: fixed;
+      z-index: 2;
+      pointer-events: none;
+      font-size: clamp(25px, 5vw, 42px);
+      filter: drop-shadow(0 0 10px rgba(255,115,0,.45));
+      animation: halloween-float 4s ease-in-out infinite;
     }
-    .halloween-pumpkin.pumpkin-left { left: 10px; top: 43%; }
-    .halloween-pumpkin.pumpkin-right { right: 10px; top: 59%; animation-delay: -2s; }
-    .halloween-pumpkin.ghost { right: 17px; top: 28%; font-size: 22px; animation-delay: -1s; }
-    @keyframes pumpkin-float {
-      0%, 100% { transform: translateY(0) rotate(-4deg); }
-      50% { transform: translateY(-6px) rotate(4deg); }
-    }
-    @media (max-width: 360px) {
-      .halloween-pumpkin { font-size: 21px; }
-      .halloween-web { width: 82px; height: 82px; }
+    .halloween-pumpkin.one { top: 22%; left: 12px; }
+    .halloween-pumpkin.two { right: 12px; bottom: 18%; animation-delay: -2s; }
+    @keyframes halloween-float {
+      0%, 100% { transform: translateY(0) rotate(-5deg); }
+      50% { transform: translateY(-7px) rotate(5deg); }
     }
     @media (prefers-reduced-motion: reduce) {
       .halloween-pumpkin { animation: none; }
     }
+
   </style>
 </head>
 <body>
 
   <div class="glow-bg"></div>
-  <div class="halloween-decor" aria-hidden="true">
-    <span class="halloween-web top-left"></span>
-    <span class="halloween-web top-right"></span>
-    <span class="halloween-web bottom-left"></span>
-    <span class="halloween-web bottom-right"></span>
-    <span class="halloween-pumpkin pumpkin-left">рџЋѓ</span>
-    <span class="halloween-pumpkin pumpkin-right">рџЋѓ</span>
-    <span class="halloween-pumpkin ghost">рџ‘»</span>
-  </div>
-
+  <div class="halloween-web top-left" aria-hidden="true"></div>
+  <div class="halloween-web top-right" aria-hidden="true"></div>
+  <div class="halloween-web bottom-left" aria-hidden="true"></div>
+  <div class="halloween-web bottom-right" aria-hidden="true"></div>
+  <div class="halloween-pumpkin one" aria-hidden="true">🎃</div>
+  <div class="halloween-pumpkin two" aria-hidden="true">🎃</div>
 
   <header>
     <div class="header-left-col">
       <div class="balance-badge" onclick="toggleModal('depositModal', true)"><span class="curr-sym">$</span> <span id="userBalance">10</span></div>
-      <button class="daily-header-btn" id="lblDailyBtn" onclick="toggleModal('dailyModal', true); checkDailyStatus();">рџЋЃ РќР°РіРѕСЂРѕРґР°</button>
+      <button class="daily-header-btn" id="lblDailyBtn" onclick="toggleModal('dailyModal', true); checkDailyStatus();">🎁 Нагорода</button>
     </div>
     <div class="logo">SITRO <span>DROP</span></div>
     <div id="headerAvatar" class="header-avatar" onclick="toggleModal('profileModal', true)">V</div>
@@ -924,7 +908,7 @@
           <div class="setting-title" id="lblLang">Language</div>
           <select class="setting-select" id="langSelect" onchange="changeLanguage(this.value)">
             <option value="en">English</option>
-            <option value="uk" selected>РЈРєСЂР°С—РЅСЃСЊРєР°</option>
+            <option value="uk" selected>Українська</option>
           </select>
         </div>
 
@@ -932,12 +916,12 @@
           <div class="setting-title" id="lblCurr">Currency</div>
           <select class="setting-select" id="currSelect" onchange="changeCurrency(this.value)">
             <option value="USD">$ USD</option>
-            <option value="UAH">в‚ґ UAH</option>
+            <option value="UAH">₴ UAH</option>
           </select>
         </div>
 
         <button class="privacy-link-btn" onclick="togglePrivacy()">
-          <span id="lblPrivacy">Privacy Policy</span> <span>в–ј</span>
+          <span id="lblPrivacy">Privacy Policy</span> <span>▼</span>
         </button>
         <div class="privacy-content" id="privacyContent">
           SITRO DROP does not collect personal identity data. All game assets and balances are saved locally via Telegram WebApp storage.
@@ -950,16 +934,16 @@
   <div class="modal-overlay" id="dailyModal" onclick="toggleModal('dailyModal', false)">
     <div class="inventory-sheet" onclick="event.stopPropagation()" style="height: auto; max-height: 85vh;">
       <div class="sheet-header">
-        <div class="sheet-title" id="lblDailyModalTitle">рџЋЃ Р©РѕРґРµРЅРЅР° РќР°РіРѕСЂРѕРґР°</div>
+        <div class="sheet-title" id="lblDailyModalTitle">🎁 Щоденна Нагорода</div>
         <button class="btn-close" onclick="toggleModal('dailyModal', false)">&times;</button>
       </div>
 
       <div class="daily-grid" id="dailyGrid">
-        <!-- РљР°СЂС‚РєРё РґРЅС–РІ Р·РіРµРЅРµСЂСѓСЋС‚СЊСЃСЏ С‡РµСЂРµР· JS -->
+        <!-- Картки днів згенеруються через JS -->
       </div>
 
       <button class="btn-spin" id="claimDailyBtn" style="margin-top: 15px;" onclick="claimDailyReward()">
-        Р—Р°Р±СЂР°С‚Рё РЅР°РіРѕСЂРѕРґСѓ
+        Забрати нагороду
       </button>
       <div id="dailyTimerText" style="text-align: center; font-size: 12px; color: #888; margin-top: 8px;"></div>
     </div>
@@ -987,7 +971,7 @@
       <!-- SHOP TAB -->
       <div class="tab-content" id="tab-shop">
         <button class="btn-back-categories" id="backCategoriesBtn" onclick="openCategoriesView()">
-          в†ђ Back to Categories
+          ← Back to Categories
         </button>
         <div class="inventory-grid" id="shopGrid"></div>
       </div>
@@ -1008,10 +992,10 @@
       </div>
       <div class="deposit-options">
         <a href="https://www.visa.com" target="_blank" class="deposit-btn">
-          <span class="card-badge">рџ’і</span> Visa
+          <span class="card-badge">💳</span> Visa
         </a>
         <a href="https://www.mastercard.com" target="_blank" class="deposit-btn">
-          <span class="card-badge">рџ’і</span> Mastercard
+          <span class="card-badge">💳</span> Mastercard
         </a>
         <button class="deposit-btn" id="clickForMoneyBtn" style="display: none; background: rgba(255,215,0,0.15); border-color: #ffd700; color: #ffd700;" onclick="openClicker()">
             Click For money
@@ -1109,29 +1093,29 @@
 
     const translations = {
       uk: {
-        reroll: 'Р—РјС–РЅРёС‚Рё СЃРєС–РЅРё СЂСѓР»РµС‚РєРё',
-        staked: 'РџРѕСЃС‚Р°РІР»РµРЅРёР№ СЃРєС–РЅ',
-        spin: 'РљР РЈРўРРўР Р РЈР›Р•РўРљРЈ',
-        inventory: 'Р†РќР’Р•РќРўРђР ',
-        steam: 'Р”РѕРґР°С‚Рё Р·С– Steam',
-        profileTitle: 'РџСЂРѕС„С–Р»СЊ С‚Р° РќР°Р»Р°С€С‚СѓРІР°РЅРЅСЏ',
-        lang: 'РњРѕРІР°',
-        curr: 'Р’Р°Р»СЋС‚Р°',
-        privacy: 'РџРѕР»С–С‚РёРєР° РєРѕРЅС„С–РґРµРЅС†С–Р№РЅРѕСЃС‚С–',
-        topUp: 'РџРѕРїРѕРІРЅРёС‚Рё Р±Р°Р»Р°РЅСЃ',
-        back: 'в†ђ РќР°Р·Р°Рґ РґРѕ РєР°С‚РµРіРѕСЂС–Р№',
-        backGame: 'РќРђР—РђР” Р”Рћ Р“Р Р',
-        buy: 'РљСѓРїРёС‚Рё',
-        sell: 'РџСЂРѕРґР°С‚Рё',
-        dailyBtn: 'рџЋЃ РќР°РіРѕСЂРѕРґР°',
-        dailyTitle: 'рџЋЃ Р©РѕРґРµРЅРЅР° РќР°РіРѕСЂРѕРґР°',
-        dayLabel: 'Р”РµРЅСЊ',
-        claim: 'Р—Р°Р±СЂР°С‚Рё',
-        alreadyClaimed: 'Р’Р¶Рµ РѕС‚СЂРёРјР°РЅРѕ',
-        available: 'РќР°РіРѕСЂРѕРґР° РґРѕСЃС‚СѓРїРЅР°!',
-        nextIn: 'РќР°СЃС‚СѓРїРЅР° РЅР°РіРѕСЂРѕРґР° С‡РµСЂРµР·',
-        notAvailableToast: 'РќР°РіРѕСЂРѕРґР° С‰Рµ РЅРµРґРѕСЃС‚СѓРїРЅР°!',
-        receivedToast: 'РћС‚СЂРёРјР°РЅРѕ'
+        reroll: 'Змінити скіни рулетки',
+        staked: 'Поставлений скін',
+        spin: 'КРУТИТИ РУЛЕТКУ',
+        inventory: 'ІНВЕНТАР',
+        steam: 'Додати зі Steam',
+        profileTitle: 'Профіль та Налаштування',
+        lang: 'Мова',
+        curr: 'Валюта',
+        privacy: 'Політика конфіденційності',
+        topUp: 'Поповнити баланс',
+        back: '← Назад до категорій',
+        backGame: 'НАЗАД ДО ГРИ',
+        buy: 'Купити',
+        sell: 'Продати',
+        dailyBtn: '🎁 Нагорода',
+        dailyTitle: '🎁 Щоденна Нагорода',
+        dayLabel: 'День',
+        claim: 'Забрати',
+        alreadyClaimed: 'Вже отримано',
+        available: 'Нагорода доступна!',
+        nextIn: 'Наступна нагорода через',
+        notAvailableToast: 'Нагорода ще недоступна!',
+        receivedToast: 'Отримано'
       },
       en: {
         reroll: 'Change Wheel Skins',
@@ -1144,12 +1128,12 @@
         curr: 'Currency',
         privacy: 'Privacy Policy',
         topUp: 'Top Up Balance',
-        back: 'в†ђ Back to Categories',
+        back: '← Back to Categories',
         backGame: 'BACK TO GAME',
         buy: 'Buy',
         sell: 'Sell',
-        dailyBtn: 'рџЋЃ Reward',
-        dailyTitle: 'рџЋЃ Daily Reward',
+        dailyBtn: '🎁 Reward',
+        dailyTitle: '🎁 Daily Reward',
         dayLabel: 'Day',
         claim: 'Claim',
         alreadyClaimed: 'Already Claimed',
@@ -1205,7 +1189,7 @@
     }
 
     function getSymbol() {
-      return currentCurrency === 'UAH' ? 'в‚ґ' : '$';
+      return currentCurrency === 'UAH' ? '₴' : '$';
     }
 
     function updateLanguageUI() {
