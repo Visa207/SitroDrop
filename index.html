@@ -810,8 +810,8 @@
     /* Halloween decor only — does not change application logic */
     .halloween-web {
       position: fixed;
-      width: 190px;
-      height: 190px;
+      width: 125px;
+      height: 125px;
       opacity: .38;
       pointer-events: none;
       z-index: 1;
@@ -833,6 +833,18 @@
     }
     .halloween-pumpkin.one { top: 22%; left: 12px; }
     .halloween-pumpkin.two { right: 12px; bottom: 18%; animation-delay: -2s; }
+    .halloween-pumpkin.three { top: 54%; right: 16px; animation-delay: -1s; }
+    .halloween-ghost {
+      position: fixed;
+      z-index: 2;
+      pointer-events: none;
+      font-size: clamp(23px, 4.5vw, 36px);
+      filter: drop-shadow(0 0 9px rgba(190,210,255,.4));
+      animation: halloween-float 5s ease-in-out infinite;
+    }
+    .halloween-ghost.one { top: 38%; left: 14px; animation-delay: -1.5s; }
+    .halloween-ghost.two { top: 68%; right: 18px; animation-delay: -3s; }
+    .halloween-ghost.three { bottom: 8%; left: 24%; animation-delay: -2.2s; }
     @keyframes halloween-float {
       0%, 100% { transform: translateY(0) rotate(-5deg); }
       50% { transform: translateY(-7px) rotate(5deg); }
@@ -852,6 +864,10 @@
   <div class="halloween-web bottom-right" aria-hidden="true"></div>
   <div class="halloween-pumpkin one" aria-hidden="true">🎃</div>
   <div class="halloween-pumpkin two" aria-hidden="true">🎃</div>
+  <div class="halloween-pumpkin three" aria-hidden="true">🎃</div>
+  <div class="halloween-ghost one" aria-hidden="true">👻</div>
+  <div class="halloween-ghost two" aria-hidden="true">👻</div>
+  <div class="halloween-ghost three" aria-hidden="true">👻</div>
 
   <header>
     <div class="header-left-col">
