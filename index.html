@@ -810,9 +810,9 @@
     /* Halloween decor only — does not change application logic */
     .halloween-web {
       position: fixed;
-      width: 125px;
-      height: 125px;
-      opacity: .38;
+      width: 115px;
+      height: 115px;
+      opacity: .30;
       pointer-events: none;
       z-index: 1;
       background:
@@ -823,34 +823,29 @@
     .halloween-web.top-right { top: 0; right: 0; transform: scaleX(-1); }
     .halloween-web.bottom-left { bottom: 0; left: 0; transform: scaleY(-1); }
     .halloween-web.bottom-right { bottom: 0; right: 0; transform: scale(-1); }
-    .halloween-pumpkin {
-      position: fixed;
-      z-index: 2;
+    /* Small decorations orbit the wheel; they are visual-only and ignore taps. */
+    .wheel-halloween-decor {
+      position: absolute;
+      z-index: 21;
       pointer-events: none;
-      font-size: clamp(25px, 5vw, 42px);
-      filter: drop-shadow(0 0 10px rgba(255,115,0,.45));
+      user-select: none;
+      font-size: clamp(20px, 5vw, 30px);
+      line-height: 1;
+      filter: drop-shadow(0 0 7px rgba(255,115,0,.35));
       animation: halloween-float 4s ease-in-out infinite;
     }
-    .halloween-pumpkin.one { top: 22%; left: 12px; }
-    .halloween-pumpkin.two { right: 12px; bottom: 18%; animation-delay: -2s; }
-    .halloween-pumpkin.three { top: 54%; right: 16px; animation-delay: -1s; }
-    .halloween-ghost {
-      position: fixed;
-      z-index: 2;
-      pointer-events: none;
-      font-size: clamp(23px, 4.5vw, 36px);
-      filter: drop-shadow(0 0 9px rgba(190,210,255,.4));
-      animation: halloween-float 5s ease-in-out infinite;
-    }
-    .halloween-ghost.one { top: 38%; left: 14px; animation-delay: -1.5s; }
-    .halloween-ghost.two { top: 68%; right: 18px; animation-delay: -3s; }
-    .halloween-ghost.three { bottom: 8%; left: 24%; animation-delay: -2.2s; }
+    .wheel-halloween-decor.pumpkin-a { left: -20px; top: 16%; }
+    .wheel-halloween-decor.pumpkin-b { right: -20px; top: 16%; animation-delay: -1s; }
+    .wheel-halloween-decor.pumpkin-c { left: 50%; bottom: -18px; transform: translateX(-50%); animation-delay: -2s; }
+    .wheel-halloween-decor.ghost-a { left: -25px; bottom: 19%; animation-delay: -1.5s; }
+    .wheel-halloween-decor.ghost-b { right: -25px; bottom: 19%; animation-delay: -2.5s; }
+    .wheel-halloween-decor.ghost-c { right: 8%; top: -24px; animation-delay: -.5s; }
     @keyframes halloween-float {
       0%, 100% { transform: translateY(0) rotate(-5deg); }
       50% { transform: translateY(-7px) rotate(5deg); }
     }
     @media (prefers-reduced-motion: reduce) {
-      .halloween-pumpkin { animation: none; }
+      .wheel-halloween-decor { animation: none; }
     }
 
   </style>
@@ -862,12 +857,6 @@
   <div class="halloween-web top-right" aria-hidden="true"></div>
   <div class="halloween-web bottom-left" aria-hidden="true"></div>
   <div class="halloween-web bottom-right" aria-hidden="true"></div>
-  <div class="halloween-pumpkin one" aria-hidden="true">🎃</div>
-  <div class="halloween-pumpkin two" aria-hidden="true">🎃</div>
-  <div class="halloween-pumpkin three" aria-hidden="true">🎃</div>
-  <div class="halloween-ghost one" aria-hidden="true">👻</div>
-  <div class="halloween-ghost two" aria-hidden="true">👻</div>
-  <div class="halloween-ghost three" aria-hidden="true">👻</div>
 
   <header>
     <div class="header-left-col">
@@ -882,6 +871,12 @@
     <div class="wheel-wrapper">
       <div class="wheel-pointer"></div>
       <canvas id="wheelCanvas" width="560" height="560"></canvas>
+      <span class="wheel-halloween-decor pumpkin-a" aria-hidden="true">🎃</span>
+      <span class="wheel-halloween-decor pumpkin-b" aria-hidden="true">🎃</span>
+      <span class="wheel-halloween-decor pumpkin-c" aria-hidden="true">🎃</span>
+      <span class="wheel-halloween-decor ghost-a" aria-hidden="true">👻</span>
+      <span class="wheel-halloween-decor ghost-b" aria-hidden="true">👻</span>
+      <span class="wheel-halloween-decor ghost-c" aria-hidden="true">👻</span>
     </div>
 
     <button class="btn-reroll" id="rerollBtn" onclick="rerollWheelSkins()">Change Wheel Skins</button>
